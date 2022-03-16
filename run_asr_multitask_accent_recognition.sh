@@ -46,6 +46,8 @@ lsm_weight=0.0
 epochs=30
 elayers=6
 batch_size=32
+recog_mode="accent"
+use_valbest_average=true
 
 # exp tag
 tag="base" # tag for managing experiments.
@@ -154,7 +156,7 @@ if [ ! -z $step05 ]; then
     echo "stage 05: Make Json Labels Done"
 fi
 
-epochs=100
+epochs=30
 if [ ! -z $step06 ]; then
     epoch_stage=0
     accentWeight=0.1
@@ -203,17 +205,12 @@ if [ ! -z $step06 ]; then
         --valid-json $data/${valid_set}/${train_set}_${bpemode}_${vocab_size}.json 
 fi
 
-n_average=5
 
-max_epoch="10 20 30 40 50 60"
-use_valbest_average=true
-recog_mode="accent"
-if [ ! -z $step7 ]; then
+if [ ! -z $step07 ]; then
     train_multitask_config=conf/e2e_asr_transformer_multitask_accent.yaml
     for expname in train_transformer_12_enc_6_dec_asrWeight_1_accentWeight_0.1_intermediate_ctc_layer_12_withSpecAug_lr_5_batch_size_32_pytorch;do
     expdir=$exp/${expname}
     for test in $recog_set;do
-    for n in $max_epoch;do
     nj=30
     if [[ $(get_yaml.py ${train_multitask_config} model-module) = *transformer* ]]; then
         # Average ASR models
@@ -227,14 +224,13 @@ if [ ! -z $step7 ]; then
             opt="--log"
         fi
         echo "$opt"
-        scripts/average_max_epoch_checkpoints.py \
+        average_checkpoints.py \
             ${opt} \
             --backend ${backend} \
-            --snapshots ${expdir}/results/snapshot.ep.* \
-            --out ${expdir}/results/${recog_model} \
-            --num ${n_average} \
-            --max-epoch ${n}
-    fi
+            --snapshots ${expdir}/results/snapshot.ep.* \                                                                                                                           │·················································································
+            --out ${expdir}/results/${recog_model} \                                                                                                                                │·················································································
+            --num ${n_average} 
+
     if [[ "${recog_mode}" == "asr" ]];then
          decode_dir=asr_decode_${test}_max_epoch_$n
     else
@@ -254,17 +250,94 @@ if [ ! -z $step7 ]; then
         --recog-json ${dev_root}/split${nj}utt/${train_set}_${bpemode}_${vocab_size}.JOB.json \
         --result-label ${expdir}/${decode_dir}/data.JOB.json \
         --model ${expdir}/results/${recog_model} \
-        --recog-mode ${recog_mode} #\
-        # --rnnlm ${lmexpdir}/rnnlm.model.best
-    if [[ "${recog_mode}" == "asr" ]]; then
-        score_sclite.sh --bpe ${vocab_size} --bpemodel ${bpe_model}.model --wer true ${expdir}/${decode_dir} ${dict}
-    else
-        concatjson.py ${expdir}/${decode_dir}/data.*.json >  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json
-        python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt
-        python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt > ${expdir}/${decode_dir}/result_acc.txt
+        --recog-mode ${recog_mode} 
+
+    concatjson.py ${expdir}/${decode_dir}/data.*.json >  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json
+    python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt
+    python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt > ${expdir}/${decode_dir}/result_acc.txt
     fi
     echo "Decoding finished"
   done
   done
+  done
+fi
+
+
+train_set="train"
+recog_set="cv_all test"
+valid_set="valid"
+#### Test for 16k data
+if [ ! -z $step08 ]; then
+    train_multitask_config=conf/e2e_asr_transformer_multitask_accent.yaml
+    expdir=pretrained_model/16k_model/
+    for test in $recog_set;do
+    nj=30
+    recog_model=model.val5.avg.best
+    if [[ "${recog_mode}" == "asr" ]];then
+         decode_dir=asr_decode_${test}_max_epoch_$n
+    else
+         decode_dir=accent_decode_${test}_max_epoch_$n
+    fi
+    echo "decoder mode: ${recog_mode}, decode_dir=${decode_dir}"
+    # split data
+    dev_root=$data/${test}
+    splitjson.py --parts ${nj} ${dev_root}/${train_set}_${bpemode}_${vocab_size}.json
+    #### use CPU for decoding
+    ngpu=0
+    ${decode_cmd} JOB=1:${nj} ${expdir}/${decode_dir}/log/decode.JOB.log \
+        asr_recog_for_multitask_accent.py \
+        --ngpu ${ngpu} \
+        --backend ${backend} \
+        --batchsize 0 \
+        --recog-json ${dev_root}/split${nj}utt/${train_set}_${bpemode}_${vocab_size}.JOB.json \
+        --result-label ${expdir}/${decode_dir}/data.JOB.json \
+        --model ${expdir}/${recog_model} \
+        --recog-mode ${recog_mode} 
+
+
+    concatjson.py ${expdir}/${decode_dir}/data.*.json >  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json
+    python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt
+    python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt > ${expdir}/${decode_dir}/result_acc.txt
+    fi
+    echo "Decoding finished"
+  done
+fi
+
+#### Test for 8k data
+train_set="train_codec"
+recog_set="cv_all_codec test_codec"
+valid_set="valid_codec"
+if [ ! -z $step09 ]; then
+    train_multitask_config=conf/e2e_asr_transformer_multitask_accent.yaml
+    expdir=pretrained_model/8k_model/
+    for test in $recog_set;do
+    nj=30
+    recog_model=model.val5.avg.best
+    if [[ "${recog_mode}" == "asr" ]];then
+         decode_dir=asr_decode_${test}_max_epoch_$n
+    else
+         decode_dir=accent_decode_${test}_max_epoch_$n
+    fi
+    echo "decoder mode: ${recog_mode}, decode_dir=${decode_dir}"
+    # split data
+    dev_root=$data/${test}
+    splitjson.py --parts ${nj} ${dev_root}/${train_set}_${bpemode}_${vocab_size}.json
+    #### use CPU for decoding
+    ngpu=0
+    ${decode_cmd} JOB=1:${nj} ${expdir}/${decode_dir}/log/decode.JOB.log \
+        asr_recog_for_multitask_accent.py \
+        --ngpu ${ngpu} \
+        --backend ${backend} \
+        --batchsize 0 \
+        --recog-json ${dev_root}/split${nj}utt/${train_set}_${bpemode}_${vocab_size}.JOB.json \
+        --result-label ${expdir}/${decode_dir}/data.JOB.json \
+        --model ${expdir}/${recog_model} \
+        --recog-mode ${recog_mode} 
+
+    concatjson.py ${expdir}/${decode_dir}/data.*.json >  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json
+    python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt
+    python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt > ${expdir}/${decode_dir}/result_acc.txt
+    fi
+    echo "Decoding finished"
   done
 fi
