@@ -1,6 +1,6 @@
 # Accent-Recognition-Multitask-System
 
-# Data preparation scripts and training pipeline for the Accented English Speech Recognition.
+# Data preparation scripts and training pipeline for the Accented English Recognition.
 
 # Environment dependent
   1. Kaldi (Data preparation related function script) [Github link](https://github.com/kaldi-asr/kaldi)
