@@ -137,7 +137,7 @@ if [ ! -z $step04 ]; then
     echo "stage 04: Make Json Labels Done"
 fi
 
-epochs=30
+epochs=50
 if [ ! -z $step05 ]; then
     epoch_stage=0
     accentWeight=0.1
