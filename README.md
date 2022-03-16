@@ -4,7 +4,7 @@
 
 # Environment dependent
   1. Kaldi (Data preparation related function script) [Github link](https://github.com/kaldi-asr/kaldi)
-  2. Espnet-0.10.4a1
+  2. Espnet-0.10.4
   4. Modify the installation address of espnet in the path.sh file
   
 # Instructions for use
