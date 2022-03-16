@@ -1,4 +1,4 @@
-# Accent-Recognition-Multitask-System
+# Accent Recognition Multitask System
 
 # Data preparation scripts and training pipeline for the Accented English Recognition.
 
@@ -50,7 +50,6 @@ egs:
   # 8k data
   bash run_asr_multitask_accent_recognition_8k.sh --nj 20 --steps 7
 ```
-
 
 ## notice
 ```
