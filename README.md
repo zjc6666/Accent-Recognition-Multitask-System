@@ -34,12 +34,12 @@ egs:
   bash run_asr_multitask_accent_recognition_16k.sh --nj 20 --steps 5
   bash run_asr_multitask_accent_recognition_16k.sh --nj 20 --steps 6
   ### for 8k data
-  bash run_asr_multitask_accent_recognition_16k.sh --nj 20 --steps 1
-  bash run_asr_multitask_accent_recognition_16k.sh --nj 20 --steps 2
-  bash run_asr_multitask_accent_recognition_16k.sh --nj 20 --steps 3
-  bash run_asr_multitask_accent_recognition_16k.sh --nj 20 --steps 4
-  bash run_asr_multitask_accent_recognition_16k.sh --nj 20 --steps 5
-  bash run_asr_multitask_accent_recognition_16k.sh --nj 20 --steps 6
+  bash run_asr_multitask_accent_recognition_8k.sh --nj 20 --steps 1
+  bash run_asr_multitask_accent_recognition_8k.sh --nj 20 --steps 2
+  bash run_asr_multitask_accent_recognition_8k.sh --nj 20 --steps 3
+  bash run_asr_multitask_accent_recognition_8k.sh --nj 20 --steps 4
+  bash run_asr_multitask_accent_recognition_8k.sh --nj 20 --steps 5
+  bash run_asr_multitask_accent_recognition_8k.sh --nj 20 --steps 6
 ```
 
   3. In addition, in order to better reproduce and avoid you training asr system again, I uploaded two ASR models, including `pretrained_model/8k_model/model.val5.avg.best` and `pretrained_model/16k_model/model.val5.avg.best`. One is trained use 16k accent160 data, the other is 8k data.
