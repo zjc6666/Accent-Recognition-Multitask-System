@@ -36,17 +36,22 @@ egs:
   bash run_asr_multitask_accent_recognition.sh --nj 20 --steps 7
 ```
 
-  4. In addition, in order to better reproduce and avoid you training asr system again, I uploaded two ASR models, including `pretrained_model/accent160.val5.avg.best` and `pretrained_model/accent160_and_librispeech960.val5.avg.best`. One is trained use only accent160 data, the other is both use accent160 and librispeech960 data.
-  You can use these two models by change the `pretrained_model` variable values. 
-  5. In the experiment, we found when run too many epochs will lead to over fitting. Similarly, we also discuss how many epochs are used to decode the data to get the best result. We find that in the accent classification system, only using 10 epochs can get better results without using ASR initialization. When using ASR initialization, using 5 epochs can get better results. At the same time, You can use different epoch decoding by changing the `max_epoch` variable in `step06`. You can also change the `max_epoch` variable to find out how many epoch models produce the best results.
+  3. In addition, in order to better reproduce and avoid you training asr system again, I uploaded two ASR models, including `pretrained_model/8k_model/model.val5.avg.best` and `pretrained_model/16k_model/model.val5.avg.best`. One is trained use 16k accent160 data, the other is 8k data.
+     You can run the following two commands to directly reproduce our results
+```
+  # 16k data
+  bash run_asr_multitask_accent_recognition.sh --nj 20 --steps 8 
+  # 8k data
+  bash run_asr_multitask_accent_recognition.sh --nj 20 --steps 9
+```
+
 
 ## notice
 ```
-  All scripts have three inputs: data exp step
-  data: Directory for storing data preparation
-  exp: Output directory during training
+  All scripts have one inputs: steps
   steps: Control execution parameters
 ```  
+
 ## Add codec (simulation narrow-band data)
   In reality, it is hard to obtain sufficient domain specific real telephony data to train acoustic models due to data privacy consideration. So we employ diversified audio codecs simulation based data augmentation method to train telephony speech recognition system.<br>
   In this study, we use AESRC accent data as wide-band data, we first down-sample the 16 kHz accent data to the 8 kH. For simulate narrow-band data, we select randomly from the full list of codecs, and using FFMPEG tools convert it to narrow-band data.<br>
