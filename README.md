@@ -1,4 +1,4 @@
-# Accent Recognition Multitask System
+# Accent Recognition Multi-task System
 
 # Data preparation scripts and training pipeline for the Accented English Recognition.
 
