@@ -16,7 +16,7 @@
 
 ## Accent recognition system
   1. Model file preparation
-    `run_asr_multitask_accent_recognition_16k.sh` and `run_asr_multitask_accent_recognition_8k.sh` are both used to train a multi-task model.
+    `run_asr_multitask_accent_recognition_16k.sh` and `run_asr_multitask_accent_recognition_8k.sh` are both used to train the multi-task model.
     Before running, you need to first put the model file(espnet/nets/pytorch_backend/e2e_asr_transformer_multitask_accent.py) to your espnet directory.
 ```
 eg: 
