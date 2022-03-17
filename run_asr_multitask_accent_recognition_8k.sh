@@ -273,8 +273,8 @@ if [ ! -z $step07 ]; then
         --recog-mode ${recog_mode} 
 
     concatjson.py ${expdir}/${decode_dir}/data.*.json >  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json
-    python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt
-    python scripts/parse_track1_jsons.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt > ${expdir}/${decode_dir}/result_acc.txt
+    python scripts/parse_track1_jsons_codec.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt
+    python scripts/parse_track1_jsons_codec.py  ${expdir}/${decode_dir}/${train_set}_${bpemode}_${vocab_size}.json ${expdir}/${decode_dir}/result.txt > ${expdir}/${decode_dir}/result_acc.txt
     fi
     echo "Decoding finished"
   done
