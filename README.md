@@ -35,7 +35,13 @@ e.g. MAIN_ROOT=/home/jicheng/espnet
   1. All the data used in the experiment are stored in the `data` directory, in which train is used for training, valid is the verification set, 
     cv_all and test are used for testing respectively.
   2. In order to better reproduce my experimental results, you can download the data set first, and then directly change the path in `wav.scp` in different sets in `data` directory. You can also use the `sed` command to replace the path in the wav.scp file with your path.
-  3. Other files can remain unchanged, you can use it directly (eg, utt2IntLabel, text, utt2spk...).
+```
+egs: 
+origin path: /home/zhb502/raw_data/2020AESRC/American_English_Speech_Data/G00473/G00473S1002.wav
+your path: /home/jicheng/ASR-data/American_English_Speech_Data/G00473/G00473S1002.wav
+sed -i "s#/home/zhb502/raw_data/2020AESRC/#/home/jicheng/ASR-data/#g" data/train/wav.scp
+```
+  4. Other files can remain unchanged, you can use it directly (eg, utt2IntLabel, text, utt2spk...).
 
 ## Accent recognition system
   1. Model file preparation
