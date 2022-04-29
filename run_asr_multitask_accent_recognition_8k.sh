@@ -140,7 +140,7 @@ fi
 epochs=50
 if [ ! -z $step05 ]; then
     epoch_stage=0
-    accentWeight=0.1
+    accentWeight=0.3
     asrWeight=1
     intermediate_ctc_weight=0
     intermediate_ctc_layer="12"
