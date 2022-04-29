@@ -7,9 +7,13 @@
 . ./cmd.sh || exit 1;
 
 
-cuda_cmd="slurm.pl --quiet --exclude=node0[1,3-8]"
-decode_cmd="slurm.pl --quiet --exclude=node0[1-4]"
-cmd="slurm.pl --quiet --exclude=node0[1,8,3,4]"
+# cuda_cmd="slurm.pl --quiet --exclude=node0[1,3-8]"
+# decode_cmd="slurm.pl --quiet --exclude=node0[1-4]"
+# decode_cmd="slurm.pl --quiet --exclude=node0[1,8,3,4]"
+cuda_cmd="run.pl"
+decode_cmd="run.pl"
+cmd="run.pl"
+
 # general configuration
 backend=pytorch
 steps=1
